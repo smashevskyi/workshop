@@ -1,0 +1,92 @@
+﻿@model MyWorkshop.ViewModels.ManageViewModel
+
+@{
+    ViewBag.Title = "Index";
+    ViewBag.ContainerType = "container-fluid "; // insert to layouy the class for main container
+}
+
+@section header{
+
+    <header id="home-header">
+        <div class="header-content">
+            <h1>Welcome to my den</h1>
+            <a href="#">
+                <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle-o fa-stack-2x text-branded"></i>
+                    <i class="fa fa-caret-down fa-stack-1x text-branded"></i>
+                </span>
+            </a>
+        </div>
+    </header>
+
+}
+<div id="about" class="row p-section">
+    <div class="container ">
+        <div class="row">
+            <div class="col-sm-12 text-center ">
+                <h2>About</h2>
+                <hr class="hr-small" />
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean non lacus libero. In porta tincidunt dui, eget bibendum ligula efficitur sed.
+                    Praesent lectus sem, ultrices a gravida vel, semper nec nisl. Sed nunc massa, ultrices vitae luctus eget, pellentesque id dolor.
+                    Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse eget arcu nibh.
+                    Vestibulum ultrices, tellus a pretium pellentesque, quam ligula maximus velit, at hendrerit dui ipsum eget augue.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="latestActivityThoughts" class="row bg-inverse text-white p-section">
+
+    <div class="col-sm-12 text-center">
+        <h2>Latest thoughts</h2>
+        <hr class="hr-small" />
+    </div>
+
+
+
+    @foreach (var post in Model.Posts)
+            {
+        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-2">
+            <div class="card text-gray-dark no-border">
+                <img src="~/Content/Images/Thoughts/@post.ImagePath" class="card-img-top w-100 border-radius-0" />
+                <div class="card-block">
+                    <h3 class="card-title">@post.Title</h3>
+                    <h6 class="card-subtitle mb-2 text-muted"></h6>
+                    <p class="card-text">@Html.Raw(post.Description)</p>
+
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">@post.PostedOn</small>
+                    @Html.RouteLink("Read", "Thoughts/View", new { id = post.Id }, new { @class = "btn btn-warning float-right" })
+
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+</div>
+
+
+<div id="latestActivityPhotos" class="row p-section">
+
+    <div class="col-sm-12 text-center py-5">
+        <h2>Latest Albums</h2>
+        <hr class="hr-small" />
+    </div>
+
+    @foreach (var album in Model.Albums)
+    {
+        <div class="index-album-preview col-xl-3 col-lg-6 col-md-6 col-sm-12 mx-0 my-2 p-0" style="background-image:url(Content/Images/Photos/@album.PreviewImagePath);">
+            <a href="@Url.Action("Album", "Photos", new { urlSlug = album.Slug })">
+                <div class="album-overlay">
+                    <span class="text">@album.Title</span>
+                </div>
+            </a>
+        </div>
+    }
+
+</div>

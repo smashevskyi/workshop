@@ -1,0 +1,126 @@
+﻿@model MyWorkshop.Models.Album
+
+@{
+    ViewBag.Title = "EditAlbum";
+    int counter = 0;
+}
+<div class="row text-white">
+    <div class="admin-album-border col-xl-10 offset-xl-1 col-lg-12  py-2">
+        <div class="row">
+            <div class="col-12">
+                @using (Html.BeginForm("EditAlbum", "Gallery"))
+                {
+
+                    @Html.HiddenFor(a => a.AlbumId)
+                    @Html.HiddenFor(a => a.PreviewImagePath)
+                    <div class="row">
+                        <div class="col-lg-5 col-md-12">
+                            <div id="album-preview" class="album-image-preview" style="background-image:url('../../../../Content/Images/Photos/@Model.PreviewImagePath')">
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7 col-md-12">
+
+
+                            @*// TITLE*@
+                            <div class="row form-group mb-2">
+                                @Html.LabelFor(model => model.Title, new { @class = "col-form-label col-md-2 col-sm-12" })
+                                <div class="col-md-10 col-sm-12">
+                                    @Html.TextBoxFor(model => model.Title, new { @class = "form-control", placeholder = "Title" })
+                                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @*// SLUG*@
+                            <div class="row form-group mb-2">
+                                @Html.LabelFor(model => model.Slug, new { @class = "col-form-label  col-md-2 col-sm-12" })
+                                <div class="col-md-10 col-sm-12">
+                                    @Html.TextBoxFor(model => model.Slug, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                            @*// Description*@
+                            <div class="row form-group mb-2">
+                                @Html.LabelFor(model => model.Description, new { @class = "col-form-label  col-md-2 col-sm-12" })
+                                <div class="col-md-10 col-sm-12">
+                                    @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @*// Occasion // make dropdown list*@
+                            <div class="row form-group mb-2">
+                                @Html.LabelFor(model => model.Occasion, new { @class = "col-form-label  col-md-2 col-sm-12" })
+                                <div class="col-md-10 col-sm-12">
+                                    @Html.TextBoxFor(model => model.Occasion, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Occasion, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            @*// PUBLISHED*@
+                            <div class="row form-group mb-2">
+                                @Html.LabelFor(model => model.Published, new { @class = "col-form-label col-md-2 col-sm-2" })
+                                <div class="col-md-10 col-sm-10">
+                                    @Html.EditorFor(model => model.Published, new { @class = "form-check-input" })
+                                    @Html.ValidationMessageFor(model => model.Published, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <hr />
+                    </div>
+                    <div class="row p-2">
+                        <div class="col-*-12">
+                            @foreach (var image in Model.Images)
+                            {
+                                <div id="imgId-@image.ImageId" class="panel admin-edit-album-panel">
+                                    <div class="admin-edit-album-preview-image" style="background-image:url('/Content/Images/Photos/@image.ThumbPath">
+
+                                        <div class="admin-edit-album-changePreview" title="Change preview" id="change-@image.ImageId" onclick="document.getElementById('album-preview').style.backgroundImage = 'url(../../../../Content/Images/Photos/@image.ImagePath)'; $('#PreviewImagePath').prop('value', '@image.ImagePath'); ">
+                                            <i class="fa fa-image"></i>
+
+                                        </div>
+                                        <a id="delete" class="admin-edit-album-deleteImage" title="Delete" href="/Manage/Gallery/DeleteImage/@image.ImageId" onclick="$.post(this.href); $('#imgId-@image.ImageId').remove();  return false;">
+                                            <i class="fa fa-close"></i>
+                                        </a>
+
+                                    </div>
+
+                                    <div class="input-group border-radius-0">
+                                        <input type="hidden" id="[@counter].ImageId" name="[@counter].ImageId" value="@image.ImageId" />
+                                        <input type="text" id="[@counter].Name" name="[@counter].Name" value="@image.Name" tabindex="@image.Position" class="form-control form-control-sm border-0" />
+                                        <span class="input-group-addon border-0 border-radius-0">
+                                        @Html.CheckBoxFor(i => image.Visible, new { Name = "[" + counter + "].Visible" })
+                                        </span>
+                                    </div>
+                                </div>
+                                { counter++; }
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-lg start">Save</button>
+                        @Html.ActionLink("Cancel", "Album", new { id = Model.AlbumId }, new { @class = "btn btn-warning btn-lg pull-right" })
+                    </div>
+
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        //function DeleteImage(IId) {
+        //    $('#imgId-' + IId).remove();
+        //};
+
+        //function ChangePreview() {
+        //    $('.changePreview:first').click();
+        //}
+        // onremove="if($('#PreviewImagePath').val() == ){ChangePreview();}; "
+        //$('.changePreview').on('click',  function() {
+        //    $('#album-preview').prop('src', "https://pp.userapi.com/c837239/v837239146/40750/oZsgIze4bLQ.jpg");
+        //});
+    </script>
+}

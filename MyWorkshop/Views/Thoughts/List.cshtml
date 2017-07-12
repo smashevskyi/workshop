@@ -1,0 +1,85 @@
+﻿@model MyWorkshop.ViewModels.PostListViewModel
+@using MyWorkshop.Models
+@using MyWorkshop.Helpers
+
+@{
+    ViewBag.Title = "List";
+    ViewBag.ContainerType = "container ";
+}
+
+@section header{
+    <header id="thoughts-header">
+        <div class="header-content">
+            <h1>There is nothing good or bad, but thinking makes it so.</h1>
+        </div>
+    </header>
+}
+
+<div class="row">
+    <!-- Blog Entries Column -->
+    <div class="col-lg-8 col-md-12">
+        
+        @foreach (var item in Model.Posts)
+        {
+            if (@item.Published)
+            {
+                <!-- Blog Post -->
+                <div class="card my-4 no-border box-shadow-bottom-black">
+                    <img class="card-img-top" style="width:100%" src="~/Content/Images/Thoughts/@item.ImagePath" alt="Card image cap">
+                    <div class="card-block">
+                        <h2 class="card-title">@item.Title</h2>
+                        @if (item.Tags.Count > 0)
+                        {
+                            <i class="fa fa-tags" aria-hidden="true"></i>
+                            foreach (var tag in item.Tags)
+                            {
+                                @Html.ActionLink(tag.Name, "List", new { tagName = tag.Name }, new { @class = "tag btn btn-sm btn-info" })
+                            }
+                        }
+                        <p class="card-text">@Html.Raw(@item.Description)</p>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <span>Posted on @item.PostedOn</span>
+                        <a href="@Url.Action("View", new { id = item.Id })" class="btn btn-info float-right rounded-0">Read <i class="fa fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            }
+
+        }
+
+        <!-- PAGINATION #2 -->
+        <nav aria-label="List results pages">
+            <ul class="pagination justify-content-center">
+
+                @if (ViewBag.IsArchive == true)
+                {
+                    @Html.PageLinks(Model.PagingInfo, x => Url.Action("Archive", new { year = ViewBag.Year, month = ViewBag.Month, page = x }))
+                }
+                else
+                {
+                    @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new { page = x, searchString = ViewBag.searchString, tagName = ViewBag.tagName }))
+                }
+
+
+                @*@for (var i = 1; i <= ViewBag.Pages; i++)
+            {
+                if (ViewBag.CurrentPage == i)
+                {
+                    <li class="page-item active">
+                        @Html.ActionLink(i.ToString(), "List", new { page = i }, new { @class = "page-link" })
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        @Html.ActionLink(i.ToString(), "List", new { page = i }, new { @class = "page-link" })
+                    </li>
+                }
+            }*@
+            </ul>
+        </nav>
+    </div>
+
+    @Html.Action("Sidebar")
+
+</div>

@@ -1,0 +1,89 @@
+﻿@model MyWorkshop.ViewModels.ManageViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<!-- POSTS -->
+<h3>Posts</h3>
+
+<table class="table table-inverse ">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Tags</th>
+            <th>Posted on</th>
+            <th>Controls</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model.Posts)
+        {
+            <tr class="@(post.Published ? "" : "bg-danger")">
+                <th scope="row">@post.Id</th>
+                <td>@post.Title</td>
+                <td>
+                    @if (post.Tags.Count > 0)
+                    {
+                        foreach (var item in post.Tags)
+                        {
+                            <span>@item.Name </span>
+                        }
+                    }
+                </td>
+                <td>@post.PostedOn</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", "Posts", new { id = post.Id }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                    @Html.RouteLink("User view", "Thoughts/View", new { id = post.Id }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="6">
+                @Html.ActionLink("See more...", "Index", "Posts", null, new { @class = "btn btn-sm btn-secondary btn-outline-warning pull-right" })
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Albums -->
+<h3>Albums</h3>
+
+<table class="table table-inverse">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Occasion</th>
+            <th>Images</th>
+            <th>Created on</th>
+            <th>Modified on</th>
+            <th>Controls</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var album in Model.Albums)
+        {
+            <tr class="@(album.Published ? "" : "bg-danger")">
+                <th scope="row">@album.AlbumId</th>
+                <td>@album.Title</td>
+                <td>@album.Occasion</td>
+                <td>@album.Images.Count()</td>
+                <td>@album.CreatedOn</td>
+                <td>@album.ModifiedOn</td>
+                <td>
+                    @Html.ActionLink("Edit", "EditAlbum", "Gallery", new { id = album.AlbumId }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                    @Html.ActionLink("View album", "Album", "Gallery", new { id = album.AlbumId }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                    @Html.RouteLink("User view", "Photos", new { urlSlug = album.Slug }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="8">
+                @Html.ActionLink("See more...", "Index", "Gallery", null, new { @class = "btn btn-sm btn-secondary btn-outline-warning pull-right" })
+            </td>
+        </tr>
+
+    </tbody>
+</table>

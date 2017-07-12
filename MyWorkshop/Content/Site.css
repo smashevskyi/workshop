@@ -1,0 +1,407 @@
+﻿
+/*=============== General styles =================*/
+
+body {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 30px;
+}
+
+body#body-user{
+    background-color: #F1F1F1 !important;
+}
+
+/* force scrollbar */
+html {
+    overflow-y: scroll;
+}
+
+body, h1, h2, h3, h4, h5, h6 {
+    font-family: "Raleway", sans-serif;
+}
+
+img {
+    max-width: 100%;
+}
+
+i {
+    font-family: fontawasome;
+}
+
+/*=============== Customs =================*/
+
+
+.text-branded {
+    color: #FBB35C !important;
+}
+
+.bg-white {
+    background-color: #FFF;
+}
+
+.unvisible {
+    opacity: 0.3 !important;
+}
+
+.p-section {
+    padding: 100px 0 100px 0;
+}
+
+.border-radius-0 {
+    border-radius: 0;
+}
+
+.no-border {
+    border: 0;
+    border-radius: 0;
+}
+
+.box-shadow-bottom-black {
+    box-shadow: 0 4px 10px 0 rgba(0,0,0,0.2), 0 4px 20px 0 rgba(0,0,0,0.2);
+}
+
+hr.hr-small {
+    max-width: 50px;
+    border: 3px solid #FBB35C !important;
+}
+
+a.tag {
+    margin: 0 5px 5px 0 !important;
+    line-height: 0.8;
+}
+
+a.sidebar-tag {
+    line-height: 0.8;
+}
+
+/*=================================================*/
+
+
+/*=================== Nav bar =====================*/
+
+nav.navbar {
+    /*height: 3rem;*/
+    background-color: transparent;
+}
+
+
+.navbar.fixed-top.navbar-toggleable-sm.scrolled {
+    background-color: rgba(41,43,43,0.8);
+    /*!important;*/
+    transition: background-color 200ms linear;
+}
+
+.navbar.fixed-top.scrolled .nav-link {
+    color: #555;
+}
+
+/*========== Header ============*/
+
+header {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
+    text-align: center;
+    color: white;
+}
+
+    header#home-header {
+        background-image: url('Images/3.jpg');
+        min-height: 100%;
+        height: 100vh;
+    }
+
+    header#thoughts-header {
+        background: linear-gradient(to bottom, rgba(255,255,255,0.5) 0%,rgba(241,241,241,1) 100%), url('Images/newspaper-wallpaper-9.jpg') no-repeat;
+        padding-top: 80px;
+        min-height: 40vh;
+    }
+
+    header#photos-header {
+        background: linear-gradient(to bottom, rgba(255,255,255,0.5) 0%,rgba(241,241,241,1) 100%), url('Images/imagegallery.jpg') no-repeat;
+        padding-top: 80px;
+        min-height: 50vh;
+        background-size: cover;
+    }
+
+    header#view-header {
+        height: 100%;
+        margin-top: 80px;
+        padding-top: 25%;
+        padding-bottom: 25%;
+    }
+
+    header#album-header {
+        height: 100vh;
+        margin-bottom: 10px;
+        padding-top: 25%;
+        padding-bottom: 25%;
+        min-height: 100%;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+
+
+div.header-content {
+    position: absolute;
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+    div.header-content > h1, div.header-content > h2 {
+        color: white;
+        font-weight: 400;
+        font-size: 1.8em;
+        text-shadow: -1px -1px 1px #111, 2px 2px 1px #363636;
+    }
+
+/* Footer */
+
+.footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+}
+
+/*====================================================*/
+
+/* Home/Index ALBUM OVERLAY */
+
+.index-album-preview {
+    width: 100%;
+    height: 12rem;
+    min-height: 25%;
+    overflow: hidden;
+    background-position: center 35%;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.album-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    /*transition: opacity 1s ease;*/
+    color: white;
+    /*-ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);*/
+    z-index: -1;
+}
+
+.text {
+    color: white;
+    font-size: 20px;
+    opacity: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 30px;
+    text-decoration: none;
+    text-align: center;
+    text-shadow: 0 0 10px black;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.index-album-preview:hover .album-overlay {
+    z-index: 999;
+    opacity: 1;
+}
+
+/* Photos/Index */
+
+.img-title {
+    position: absolute;
+    color: white;
+    bottom: 20px;
+    left: 20px;
+}
+
+.album-archive-dropdown {
+    background: black;
+    color: white;
+    border-left: 2px solid white;
+    border-right: 2px solid white;
+    border-top: 4px solid white;
+    border-bottom: 4px solid white;
+    border-radius: 0;
+    box-shadow: 0 10px 5px #888;
+    opacity: 0.2;
+}
+
+    .album-archive-dropdown::after {
+        display: none;
+    }
+
+/*====================================================*/
+
+/* Manage/Post/CreateEdit */
+
+.custom-file-input {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    background-color: transparent;
+    color: transparent;
+}
+/* Manage/Gallery/Album */
+
+.admin-album-border {
+    border: 2px solid gray;
+    background-color: rgba(255, 255, 255,0.1);
+}
+
+.album-image-preview {
+    width: 100%;
+    min-height: 400px;
+    background-position: center 35%;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.image-priview-dragable {
+    margin: 3px 3px 3px 3px;
+    padding: 1px;
+    float: left;
+    font-size: 4em;
+    text-align: center;
+    width: 215px;
+    height: 150px;
+    background-position: center 35%;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Manage/Gallery/EditAlbum */
+
+.admin-edit-album-panel {
+    border: 0;
+    margin: 5px;
+    display: inline-block;
+    width: 200px;
+    height: 165px;
+}
+
+.admin-edit-album-preview-image {
+    width: 200px;
+    height: 130px;
+    background-size: 100% 100%;
+}
+
+.admin-edit-album-changePreview {
+    display: block;
+    float: left;
+    width: 30px;
+    height: 29px;
+    text-align: right;
+}
+
+.admin-edit-album-deleteImage {
+    display: block;
+    float: right;
+    width: 30px;
+    height: 29px;
+}
+
+a#delete {
+    color: red;
+}
+
+
+
+
+/*==================== MASONRY =====================*/
+
+.grid {
+    background: #F1F1F1;
+}
+
+    /* clear fix */
+    .grid:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+/* ---- .grid-item ---- */
+
+.grid-sizer,
+.grid-item {
+    width: 24.56%;
+    float: left;
+}
+
+.grid-item {
+    margin-bottom: 0.6%;
+}
+
+.gutter-sizer {
+    width: 0.6%;
+}
+
+.grid-item img {
+    display: block;
+    width: 100%;
+}
+
+/*==================== ISOTOP ====================*/
+
+.isotop-grid-sizer,
+.isotop-grid-item {
+    width: 30%;
+    float: left;
+}
+
+.isotop-grid-item {
+    margin-bottom: 3.3%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: 0 4px 10px 0 rgba(0,0,0,0.2), 0 4px 20px 0 rgba(0,0,0,0.2), 0 10px 10px -2px #888;
+}
+
+.isotop-gutter-sizer {
+    width: 3.3%;
+}
+
+.isotop-grid-item img {
+    display: block;
+    width: 100%;
+}
+
+@media screen and (max-width: 991px) {
+    /* 2 columns for smaller screens */
+    .isotop-grid-sizer,
+    .isotop-grid-item {
+        width: 45%;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    /* 5 columns for larger screens */
+    .isotop-grid-sizer,
+    .isotop-grid-item {
+        width: 100%;
+    }
+
+    .isotop-gutter-sizer {
+        width: 0;
+    }
+}

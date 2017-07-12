@@ -1,0 +1,101 @@
+﻿@model MyWorkshop.ViewModels.SidebarComplexModel
+
+<!-- Sidebar Widgets Column -->
+<div class="col-lg-4 col-md-12">
+    <!-- Search Widget -->
+    <div class="card my-4 no-border box-shadow-bottom-black">
+        @using (Html.BeginForm("List", "Thoughts", FormMethod.Get))
+            {
+            <h5 class="card-header">Search</h5>
+            <div class="card-block">
+                <div class="input-group">
+                    <input type="text" id="searchString" name="searchString" class="form-control rounded-0" placeholder="Search for...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary rounded-0" type="submit">Go!</button>
+                    </span>
+                </div>
+            </div>
+        }
+    </div>
+    <!-- Tag Widget -->
+    <div class="card my-4 no-border box-shadow-bottom-black">
+        <h5 class="card-header">Tags</h5>
+        <div class="card-block">
+            <div class="card-text">
+                <ul class="list-inline list-unstyled mb-0">
+                    @foreach (var td in ViewBag.TagDictionary)
+                    {
+                        <li class="list-inline-item">
+                            @{
+                                string tagName = @td.Key;
+                            }
+                            @Html.ActionLink(@tagName, "List", new { tagName = td.Key }, new { @class = "sidebar-tag btn btn-sm btn-info m-0" })
+                        </li>
+                                }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Latest post Widget -->
+    <div class="card my-4 no-border box-shadow-bottom-black">
+        <h5 class="card-header">Latest post</h5>
+        <div class="card-block">
+            <ul class="list-unstyled">
+
+                @foreach (var post in Model.Posts)
+            {
+                    <li class="media mb-3">
+
+
+                        <div class="d-flex mr-3" style="width:100px; height:auto">
+                            <a href="/Thoughts/View/@post.Id">
+                                <img style="width:100px; height:100px" src="~/Content/Images/Thoughts/@post.ImagePath" />
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <a href="/Thoughts/View/@post.Id">
+                                <h6 class="mt-0 mb-1">@post.Title</h6>
+                            </a>
+                            <span class="text-muted">@post.PostedOn.ToShortDateString()</span>
+                        </div>
+
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <!-- Archive Widget -->
+    <div class="card my-4 no-border box-shadow-bottom-black">
+        <h5 class="card-header">Archive</h5>
+        <div class="card-block">
+            <div class="card-text">
+                @foreach (var group in Model.ArchiveEntries.GroupBy(m => m.Year))
+                {
+                    <ul class="list-unstyled">
+                        <li>
+                            @group.Key
+                            <ul>
+                                @foreach (var item in group)
+                                {
+                                    <li>
+                                        @Html.RouteLink(
+                                            string.Format("{0} ({1})", item.MonthName, item.Total),
+                                            "",
+                                            new
+                                            {
+                                                controller = "Thoughts",
+                                                action = "Archive",
+                                                year = item.Year,
+                                                month = item.Month
+                                            })
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>

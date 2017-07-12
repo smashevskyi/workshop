@@ -1,0 +1,92 @@
+﻿@model MyWorkshop.ViewModels.AlbumComplexModel
+
+@{
+    ViewBag.Title = "Index";
+    ViewBag.ContainerType = "container-fluid ";
+}
+
+@section head{
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+}
+
+@section header{
+    <header id="photos-header">
+        <div class="header-content">
+            <h1></h1>
+        </div>
+    </header>
+}
+
+<div class="row">
+    <div class="col-8 offset-2">
+
+        <div id="dropDownArchiveGroup" class="btn-group d-flex justify-content-center mb-4" role="group" aria-label="Button group with nested dropdown">
+            <div class="btn-group" role="group">
+                @foreach (var group in Model.ArchiveEntries.GroupBy(m => m.Year))
+                {
+                    <div class="btn-group" role="group">
+                        <button id="btnGroupDrop-@group.Key" type="button" class="btn btn-sm btn-secondary dropdown-toggle album-archive-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @group.Key
+                        </button>
+                        <div class="dropdown-menu border-radius-0" aria-labelledby="btnGroupDrop-@group.Key">
+                            @foreach (var item in group)
+                            {
+                                @Html.RouteLink(
+                                         string.Format("{0} ({1})", item.MonthName, item.Total),
+                                         "",
+                                         new
+                                         {
+                                             controller = "Photos",
+                                             action = "Archive",
+                                             year = item.Year,
+                                             month = item.Month
+                                         },
+                                         new { @class = "dropdown-item" })
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="isotop-grid">
+            <div class="isotop-grid-sizer"></div>
+            <div class="isotop-gutter-sizer"></div>
+            @foreach (var album in Model.Albums)
+            {
+                <div class="isotop-grid-item">
+                    <a href="Photos/Album/@album.Slug">
+                        <img class="img-thumbnail" src="~/Content/Images/Photos/@album.PreviewImagePath" />
+                    </a>
+                    <div class="img-title">
+                        <p class="hidden-sm-down p-0 m-0">@album.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+
+        var grid = document.querySelector('.isotop-grid');
+        var iso;
+
+        imagesLoaded(grid, function () {
+            // init Isotope after all images have loaded
+            iso = new Isotope(grid, {
+                masonry: {
+                    columnWidth: '.isotop-grid-sizer',
+                    gutter: '.isotop-gutter-sizer',
+                },
+                itemSelector: '.isotop-grid-item',
+                transitionDuration: '0.2s',
+                percentPosition: true
+            });
+        });
+
+    </script>
+}

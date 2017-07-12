@@ -1,0 +1,71 @@
+﻿@model IEnumerable<MyWorkshop.Models.Post>
+
+
+@{
+    ViewBag.Title = "Manage Posts";
+}
+
+
+@Html.ActionLink("New post", "Create", null, new { @class = "btn btn-sm btn-success pull-right" })
+
+<table class="table table-inverse">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Tags</th>
+            <th>Posted on</th>
+            <th>Controls</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model)
+        {
+
+            <tr class="@(post.Published ? "" : "bg-danger")">
+                <th scope="row">@post.Id</th>
+                <td>@post.Title</td>
+                <td>
+                    @if (post.Tags.Count > 0)
+                    {
+                        foreach (var item in post.Tags)
+                        {
+                            <span>@item.Name </span>
+                        }
+                    }
+                </td>
+                <td>@post.PostedOn</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = post.Id }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                    @Html.ActionLink("Delete", "Delete", new { id = post.Id }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                    @Html.RouteLink("User view", "Thoughts/View", new { id = post.Id }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+<!-- PAGINATION #2 -->
+<nav aria-label="List results pages">
+    <ul class="pagination justify-content-center">
+        @for (var i = 1; i <= ViewBag.Pages; i++)
+        {
+            if (ViewBag.CurrentPage == i)
+            {
+                <li class="page-item active">
+                    @Html.ActionLink(i.ToString(), "Thoughts", new { page = i }, new { @class = "page-link" })
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    @Html.ActionLink(i.ToString(), "Thoughts", new { page = i }, new { @class = "page-link" })
+                </li>
+            }
+        }
+    </ul>
+</nav>
+
+
+

@@ -1,0 +1,62 @@
+﻿@model MyWorkshop.Models.Post
+
+
+<!--This view currently does not use-->
+@{
+    ViewBag.Title = "View";
+}
+
+@*@section header{
+        <div class="container">
+            <header id="view-header">
+                @*style='background-image: url("../../Content/Images/Thoughts/@Model.ImagePath");'
+                <div class="view-header-content">
+                    <h1>@Model.Title</h1>
+                    <hr class="hr-small" />
+                    <h2>
+                        @foreach (var item in Model.Tags)
+                        {
+                            <span>@item.Name </span>
+                        }
+                    </h2>
+                    <h2>Posted on 11.04.2017 12:18:01</h2>
+                </div>
+            </header>
+        </div>
+
+    }*@
+<div class="row text-white py-2">
+    <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 col-md-12">
+        <header id="view-header" style="background-image: url('/Content/Images/Thoughts/@Model.ImagePath'); height:50%;">
+            <div class="view-header-content">
+                <h1>@Model.Title</h1>
+            </div>
+        </header>
+
+        <!-- Blog Entries Column -->
+
+        <div class="content-wrapper my-4">
+
+            @if (Model.Tags.Count > 0)
+            {
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                foreach (var item in Model.Tags)
+                {
+                    @Html.ActionLink(item.Name, "List", new { tagName = item.Name }, new { @class = "tag btn btn-sm btn-info" }) // need to redo for manage  view
+                }
+            }
+
+            <!-- Blog Post -->
+            <p>@Html.Raw(@Model.Description)</p>
+            <p class="text-muted">Posted on 11.04.2017 12:18:01</p>
+            <p>
+                @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+                @Html.ActionLink("Back to List", "Index")
+            </p>
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        @*@Html.Action("Sidebar")*@
+
+    </div>
+</div>

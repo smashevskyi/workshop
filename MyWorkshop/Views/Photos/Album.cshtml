@@ -1,0 +1,59 @@
+﻿@model MyWorkshop.Models.Album
+
+@{
+    ViewBag.Title = "Album";
+    ViewBag.ContainerType = "container-fluid";
+}
+
+@section head{
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+    <link href="~/Content/lightbox.css" rel="stylesheet">
+}
+<div class="row">
+    <header id="album-header" style='background-image: url("../../Content/Images/Photos/@Model.PreviewImagePath");'>
+        <div class="view-header-content">
+            <h1>@Model.Title</h1>
+        </div>
+    </header>
+</div>
+
+<div class="grid row">
+    <div class="grid-sizer"></div>
+    <div class="gutter-sizer"></div>
+    @foreach (var image in Model.Images)
+    {
+        if (image.Visible == true)
+        {
+            <div class="grid-item">
+                <a href="~/Content/Images/Photos/@image.ImagePath" data-lightbox="test" data-title="@image.Name">
+                    <img src="~/Content/Images/Photos/@image.ResizedPath" />
+                </a>
+            </div>
+        }
+    }
+</div>
+
+@section scripts{
+    <script>
+
+        var grid = document.querySelector('.grid');
+        var msnry;
+
+        imagesLoaded(grid, function () {
+            // init Isotope after all images have loaded
+            msnry = new Masonry(grid, {
+                itemSelector: '.grid-item',
+                columnWidth: '.grid-sizer',
+                percentPosition: true,
+                gutter: '.gutter-sizer'
+
+                //, horizontalOrder: true
+                , transitionDuration: '0.2s'
+            });
+        });
+
+    </script>
+
+    <script src="~/Scripts/lightbox.js"></script>
+}

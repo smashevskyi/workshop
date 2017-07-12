@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My Workshop</title>
+    
+    @RenderSection("head", required: false)
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+
+</head>
+<body id="body-user">
+
+    <!-- NAVBAR -->
+    <div class="container-fluid">
+        <nav class="navbar navbar-inverse fixed-top navbar-toggleable-sm">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            @Html.ActionLink("Workshop", "Index", "Home", new { area = "" }, new { @class = "navbar-brand text-branded" })
+            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item">
+                        @Html.ActionLink("Latest activity", "Index", "Home", null, new { @class = "nav-link text-branded" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Thoughts", "List", "Thoughts", null, new { @class = "nav-link text-branded" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Photos", "Index", "Photos", null, new { @class = "nav-link text-branded" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Workshop", "Index", "Workshop", null, new { @class = "nav-link text-branded" })
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- HEADER -->
+    @RenderSection("header", required: false)
+
+    <!-- BODY CONTENT -->
+    <div class="@ViewBag.ContainerType body-content ">
+        @RenderBody()
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <hr />
+            <p class="text-center">&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <!-- CHANG NAVBAR ONSCROLL -->
+    <script>
+        $(function () {
+            $(document).scroll(function () {
+                var $nav = $(".navbar.fixed-top");
+                $nav.toggleClass('scrolled', $(this).scrollTop() > $nav.height());
+            });
+        });
+    </script>
+
+</body>
+</html>

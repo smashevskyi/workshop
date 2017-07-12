@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My Workshop</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @RenderSection("head", false)
+
+</head>
+<body class="bg-inverse p-0">
+
+    <!-- NAVBAR ADMIN -->
+    <div class="container-fluid">
+        <nav class="navbar navbar-inverse navbar-toggleable-sm px-5" style="z-index:5">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            @Html.ActionLink("Workshop", "Index", "Home", new { area = "" }, new { @class = "navbar-brand text-branded" })
+
+            <div id="navbarSupportedContent" class="navbar-collapse collapse justify-content-end pr-5 bg-inverse">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="" id="navbarDropdownIndex" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Home
+                        </a>
+                        <div class="dropdown-menu bg-inverse" aria-labelledby="navbarDropdownIndex">
+                            @Html.ActionLink("Admin Manage", "Index", "Home", null, new { @class = "dropdown-item nav-link text-branded" })
+                            @Html.RouteLink("User Home", "Default", new { controller = "Home" }, new { @class = "dropdown-item nav-link text-branded" })
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="" id="navbarDropdownGallery" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Gallery
+                        </a>
+                        <div class="dropdown-menu bg-inverse" aria-labelledby="navbarDropdownGallery">
+                            @Html.ActionLink("Admin Gallery", "Index", "Gallery", null, new { @class = "dropdown-item nav-link text-branded" })
+                            @Html.RouteLink("User Photos", "Default", new { controller = "Photos" }, new { @class = "dropdown-item nav-link text-branded" })
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuPost" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Post
+                        </a>
+                        <div class="dropdown-menu bg-inverse" aria-labelledby="navbarDropdownMenuPost">
+                            @Html.ActionLink("Admin Posts", "Index", "Posts", null, new { @class = "dropdown-item nav-link text-branded" })
+                            @Html.RouteLink("User Thoughts", "Thoughts", new { action = "List" }, new { @class = "dropdown-item nav-link text-branded" })
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- BODY CONTENT ADMIN -->
+    <div class="container-fluid body-content px-0">
+        @RenderBody()
+        <hr />
+
+        <!-- FOOTER ADMIN -->
+        <footer class="footer">
+            <div class="container-fluid text-branded">
+                <p class="text-center">&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- SCRIPTS ADMIN -->
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryval")
+    @RenderSection("scripts", required: false)
+
+    <!-- CHANGING NAVBAR ONSCROLL ADMIN -->
+    <script>
+        $(function () {
+            $(document).scroll(function () {
+                var $nav = $(".navbar.fixed-top");
+                $nav.toggleClass('scrolled', $(this).scrollTop() > $nav.height());
+            });
+        });
+    </script>
+</body>
+</html>

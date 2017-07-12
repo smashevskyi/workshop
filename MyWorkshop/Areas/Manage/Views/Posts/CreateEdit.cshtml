@@ -1,0 +1,116 @@
+﻿@model MyWorkshop.ViewModels.PostViewModel
+
+@{
+    ViewBag.ContainerType = "container ";
+}
+
+@section head{
+    <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=nd3soc4agcbn1z14wo66ghze5vq88emhke28logs5ox4f31f"></script>
+    }
+
+<div class="row text-white py-2 admin-album-border" >
+    <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 col-md-12">
+        <h2>@ViewBag.Title</h2>
+        @{string action = ViewBag.Title;}
+
+        @using (Html.BeginForm(action, "Posts", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(model => model.Id)
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            // TITLE
+            <div class="row form-group">
+                @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "col-form-label col-md-2 col-sm-12" })
+                <div class="col-md-10 col-sm-12">
+                    @Html.TextBoxFor(model => model.Title, new { @class = "form-control", placeholder = "Title" })
+                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            // SLUG
+            <div class="row form-group">
+                @Html.LabelFor(model => model.UrlSlug, new { @class = "col-form-label col-md-2 col-sm-12" })
+                <div class="col-md-10 col-sm-12">
+                    @if (action == "Edit")
+                    {
+                        @Html.TextBoxFor(model => model.UrlSlug, new { @class = "form-control", @readonly = true })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.UrlSlug, new { @class = "form-control", placeholder = "Slug" })
+                    }
+                    @Html.ValidationMessageFor(model => model.UrlSlug, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            // TAGS
+            <div class="row form-group">
+                @Html.LabelFor(model => model.Tags, htmlAttributes: new { @class = "col-form-label col-md-2 col-sm-12" })
+                <div class="col-md-10 col-sm-12">
+                    @Html.TextBoxFor(model => model.Tags, new { @class = "form-control", placeholder = "Tags" })
+                    @Html.ValidationMessageFor(model => model.Tags, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            // DESCRIPTION
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 5, style = "min-width: 100%;" })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+
+            // PUBLISHED
+            <div class="form-group row">
+                @Html.LabelFor(model => model.Published, new { @class = "control-label col-md-2 col-sm-2 col-4" })
+                <div class="checkbox col-md-10 col-sm-10 col-8">
+                    @Html.EditorFor(model => model.Published, new { @class = "form-check-input" })
+                    @Html.ValidationMessageFor(model => model.Published, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            // IMAGE
+            <div class="form-group">
+                <div style="position:relative;">
+                    <a class='btn btn-secondary' href='javascript:;'>
+                        Choose File...
+                        <input type="file" class="custom-file-input" name="Image" size="40"
+                               onchange='$("#upload-file-info").html($(this).val()); var URL = window.URL || window.webkitURL; document.getElementById("img-prw").src = URL.createObjectURL(this.files[0]);'>
+                    </a>
+                    <span class='label label-info' id="upload-file-info"></span>
+                </div>
+                @if (Model.ImagePath == null)
+                {
+                    <img id="img-prw" class="img-thumbnail mx-auto my-1" width="200" height="135" src="~/Content/Images/noimage.jpg" />
+                }
+                else
+                {
+                    <img id="img-prw" class="img-thumbnail  mx-auto my-1" width="200" height="135"
+                         src="~/Content/Images/Thoughts/@Model.ImagePath" />
+                }
+            </div>
+
+            // SUBMIT BUTTON
+            <div class="form-group">
+                <input type="submit" value=@action class="btn btn-success btn-lg" />
+                @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-warning btn-lg pull-right" })
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        tinymce.init({
+            selector: "textarea",  // change this value according to your HTML
+            //toolbar: "image",
+            height: 500,
+            theme: 'modern',
+            plugins: [
+               'advlist code autolink lists link image charmap print preview hr anchor pagebreak']
+        });
+    </script>
+}

@@ -1,0 +1,129 @@
+﻿@model IEnumerable<MyWorkshop.Models.Album>
+
+
+@{
+    ViewBag.Title = "Manage gallery";
+    ViewBag.HeaderTitle = "Manage > Gallery";
+}
+
+<!-- modal placeholder-->
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+@Html.ActionLink("Add", "NewAlbum", null, new { data_modal = "", id = "btnCreate", @class = "btn btn-sm btn-success pull-right" })
+
+<table class="table table-inverse">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Occasion</th>
+            <th>Images</th>
+            <th>Created on</th>
+            <th>Modified on</th>
+            <th>Published</th>
+            <th>Controls</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var album in Model)
+            {
+
+            <tr class="@(album.Published ? "" : "bg-danger")">
+                <th scope="row">@album.AlbumId</th>
+                <td>@album.Title</td>
+                <td>@album.Occasion</td>
+                <td>@album.Images.Count()</td>
+                <td>@album.CreatedOn</td>
+                <td>@album.ModifiedOn</td>
+                <td>@album.Published</td>
+                <td>
+                    @Html.ActionLink("Edit", "EditAlbum", new { id = album.AlbumId }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                    @Html.ActionLink("View", "Album", new { id = album.AlbumId }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                    @Html.RouteLink("User view", "Photos", new { urlSlug = album.Slug }, new { @class = "btn btn-sm btn-secondary btn-outline-warning" })
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+
+<!-- PAGINATION #2 -->
+<nav aria-label="List results pages">
+    <ul class="pagination justify-content-center">
+        @for (var i = 1; i <= ViewBag.Pages; i++)
+            {
+                if (ViewBag.CurrentPage == i)
+                {
+                <li class="page-item active">
+                    @Html.ActionLink(i.ToString(), "Index", new { page = i }, new { @class = "page-link" })
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    @Html.ActionLink(i.ToString(), "Index", new { page = i }, new { @class = "page-link" })
+                </li>
+            }
+        }
+    </ul>
+</nav>
+
+@section Scripts{
+    <script>
+        $(function () {
+
+            $.ajaxSetup({ cache: false });
+
+            $("a[data-modal]").on("click", function (e) {
+
+                $('#myModalContent').load(this.href, function () {
+
+                    $('#myModal').modal({
+                        /*backdrop: 'static',*/
+                        keyboard: true
+                    }, 'show');
+
+                    bindForm(this);
+                });
+
+                return false;
+            });
+
+
+        });
+
+        function bindForm(dialog) {
+            $.validator.unobtrusive.parse('form');
+            if (form.valid()) {
+                $('form', dialog).submit(function () {
+                    $.ajax({
+                        url: this.action,
+                        type: this.method,
+                        data: $(this).serialize(),
+                        success: function (result) {
+                            if (result.success) {
+                                $('#myModal').modal('hide');
+                                //Refresh
+                                //location.reload();
+                            } else {
+                                $('#myModalContent').html(result);
+                                bindForm();
+                            }
+                        }
+                    });
+                    return false;
+                });
+            }
+        }
+    </script>
+
+}

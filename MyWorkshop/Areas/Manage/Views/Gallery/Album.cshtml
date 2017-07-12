@@ -1,0 +1,86 @@
+﻿@model MyWorkshop.Models.Album
+
+@{
+    ViewBag.Title = "Album";
+}
+
+<div class="row text-white m-0">
+    <div class="admin-album-border col-xl-10 offset-xl-1 col-lg-12">
+        <div class="row py-2">
+            <div class="col-lg-6 offset-lg-3 col-md-12">
+                <h3 class="text-center">@Model.Title</h3>
+                <span class="text-muted justify-content-center">@Model.Images.Count() photos in album</span>
+                <div class="album-image-preview my-2" style="background-image:url('../../../../Content/Images/Photos/@Model.PreviewImagePath')">
+
+                </div>
+                <h4>@Model.Description</h4>
+                @using (Html.BeginForm("UploadImages", "Gallery", FormMethod.Post, new { enctype = "multipart/form-data", onSubmit = "required()" }))
+                {
+                    <div class="input-group my-2">
+                        <input type="hidden" name="albumId" value="@Model.AlbumId" />
+                        <input type="file" id="files" name="files" accept="image/x-png, image/gif, image/jpeg" multiple>
+                        <button type="submit" id="submit" value="Upload">Upload</button> @*можно попробовать айди альбома в value запихнуть*@
+                    </div>
+                }
+                <div class="form-group">
+                    @Html.ActionLink("Edit album", "EditAlbum", new { id = Model.AlbumId }, new { @class = "btn btn-info" })
+                    @Html.ActionLink("Back to list", "Index", null, new { @class = "btn btn-warning  pull-right" })
+                </div>
+            </div>
+
+            <div class="col-12">
+                <ul id="sortable" class="ui-sortable p-0 m-0 list-unstyled">
+                    @foreach (var image in Model.Images)
+            {
+                if (image.Visible == true)
+                {
+                            <li class="ui-sortable-handle ui-state-default image-priview-dragable" id="@image.ImageId" style="background-image:url('/Content/Images/Photos/@image.ThumbPath');"></li>
+                        }
+                        else
+                        {
+                            <li class="ui-sortable-handle ui-state-default image-priview-dragable unvisible" id="@image.ImageId" style="background-image:url('/Content/Images/Photos/@image.ThumbPath');"></li>
+                        }
+
+
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        $(function () {
+            $("#sortable").sortable({
+                stop: function (event, ui) {
+
+                    $.ajax({
+                        url: '/Manage/Gallery/SortedList',
+                        data: { items: $("#sortable").sortable('toArray') },
+                        type: 'post',
+                        traditional: true
+                    });
+
+                }
+            });
+
+            $("#sortable").disableSelection();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#submit').bind("click", function () {
+                var imgVal = $('#files').val();
+                if (imgVal == '') {
+                    alert("No files selected. Please choose files first");
+                    return false;
+                }
+                return true;
+
+            });
+        });
+    </script>
+}

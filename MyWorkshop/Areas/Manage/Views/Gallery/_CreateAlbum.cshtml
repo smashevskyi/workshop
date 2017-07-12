@@ -1,0 +1,62 @@
+﻿@model MyWorkshop.ViewModels.AlbumViewModel
+
+<div class="modal-header">
+    <h4 class="modal-title pull-left" id="myModalLabel">Add new Album</h4>
+    <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true">&times;</button>
+</div>
+
+
+@using (Html.BeginForm("NewAlbum", "Gallery", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="modal-body">
+
+        <div class="form-horizontal">
+
+            @Html.HiddenFor(a => a.AlbumId)
+
+            <!--TITLE-->
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.Title, new { @class = "control-label" })*@
+                @Html.TextBoxFor(model => model.Title, new { @class = "form-control", placeholder = "Title"})
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+
+            @*SLUG*@
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.Slug, new { @class = "control-label" })*@
+                @Html.TextBoxFor(model => model.Slug, new { @class = "form-control", placeholder = "Slug" })
+                @Html.ValidationMessageFor(model => model.Slug, "", new { @class = "text-danger" })
+            </div>
+
+            @*DESCRIPTION*@
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.Description, new { @class = "control-label" })*@
+                @Html.TextBoxFor(model => model.Description, new { @class = "form-control", placeholder = "Description" })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+
+            @*OCCASION // make dropdown list*@
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.Occasion, new { @class = "control-label" })*@
+                @Html.TextBoxFor(model => model.Occasion, new { @class = "form-control", placeholder = "Occasion" })
+                @Html.ValidationMessageFor(model => model.Occasion, "", new { @class = "text-danger" })
+            </div>
+
+            @*// PUBLISHED*@
+            <div class="form-group">
+                @Html.LabelFor(model => model.Published, new { @class = "control-label" })
+                @Html.EditorFor(model => model.Published, new { @class = "form-check-input" })
+                @Html.ValidationMessageFor(model => model.Published, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">Cancel</button>
+
+        <input type="submit" value="Create" class="btn btn-default" />
+    </div>
+}
+

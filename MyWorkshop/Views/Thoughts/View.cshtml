@@ -1,0 +1,40 @@
+﻿@model MyWorkshop.Models.Post
+
+@{
+    ViewBag.Title = "View";
+    ViewBag.ContainerType = "container ";
+}
+
+<header id="view-header" class="box-shadow-bottom-black" style='background-image: url("../../Content/Images/Thoughts/@Model.ImagePath");'>
+    <div class="view-header-content">
+        <h1>@Model.Title</h1>
+    </div>
+</header>
+
+<div class="row">
+    <!-- Blog Entries Column -->
+    <div class="col-lg-8 col-md-12">
+        <div class="content-wrapper my-4 bg-white p-4 no-border box-shadow-bottom-black">
+
+            @if (Model.Tags.Count > 0)
+            {
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                foreach (var item in Model.Tags)
+                {
+                    @Html.ActionLink(item.Name, "List", new { tagName = item.Name }, new { @class = "tag btn btn-sm btn-info" })
+                }
+            }
+
+            <!-- Blog Post -->
+            <p>@Html.Raw(@Model.Description)</p>
+            <p class="text-muted" style="font-style: italic">Posted on 11.04.2017 12:18:01</p>
+            <p>
+                @Html.ActionLink("Back to List", "List")
+            </p>
+        </div>
+    </div>
+
+    <!-- Sidebar Widgets Column -->
+    @Html.Action("Sidebar")
+
+</div>
