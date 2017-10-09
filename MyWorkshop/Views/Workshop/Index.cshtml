@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    ViewBag.ContainerType = "container ";
+}
+
+@{
+    Html.RenderPartial("_WebAPI");
+}
+
+<a href="https://elvery.net/demo/responsive-tables/" hidden="hidden">Responsive tables</a>
+
+@{
+    Html.RenderPartial("_Knockout");
+}
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/workshop")
+}

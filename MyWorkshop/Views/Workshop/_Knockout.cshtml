@@ -1,0 +1,93 @@
+﻿<div class="row mt-5" id="ws-knockout">
+
+    <div class="col-md-12 col-lg-9">
+        <h1 class="text-center">Knockout.js based on previous Web API controller</h1>
+
+        <h2>Books:</h2>
+
+        <table class="table table-responsive table-hover" id="ko-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Cover</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: books">
+                <tr>
+                    <th data-bind="text: id"></th>
+                    <td data-bind="text: title"></td>
+                    <td data-bind="text: author"></td>
+                    <td data-bind="text: year"></td>
+                    <td data-bind="text: cover"></td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-warning" data-bind="click: $root.edit" title="Edit"><i class="fa fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" data-bind="click: $root.delBook" title="Delete"><i class="fa fa-remove"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-danger" data-bind="visible: error"><span data-bind="text: error"></span></div>
+    </div>
+
+    <div class="col-md-12 col-lg-3">
+
+        <!-- Button block -->
+        <button class="btn btn-primary btn-block" data-bind="click: getBooks">Show all</button>
+        <button class="btn btn-success btn-block" data-bind="click: $root.cancel">Add new book</button>
+
+        <!-- Create block -->
+        <div id="ko-add-block" class="m-y-md" data-bind="ifnot: book()">
+            <input class="form-control" type="text" data-bind="value: $root.title" name="Title" placeholder="Title" />
+            <input class="form-control" type="text" data-bind="value: $root.author" name="Author" placeholder="Author" />
+            <input class="form-control" type="text" data-bind="value: $root.year" name="Year" placeholder="Year" />
+            <input class="form-control" type="text" data-bind="value: $root.cover" name="Cover" placeholder="Cover" />
+
+            <button class="btn btn-success" data-bind="click: $root.addBook">Add</button>
+            <button class="btn btn-warning pull-right" data-bind="click: $root.reset">Reset</button>
+        </div>
+
+        <!-- Edit block -->
+        <div id="ko-edit-block" data-bind="if: book">
+            <div class="card m-y-md my-2">
+
+                <div class="card-header">
+                    <h4 class="text-center mb-0">Edit book</h4>
+                </div>
+
+                <label data-bind="visible: false">ID</label>
+                <input id="ko-edit-id" type="text" name="bookId" value="" disabled="disabled" data-bind="value: book().id, visible: false" />
+                <div class="card-block">
+                    <div class="form-group mb-0">
+                        <label for="ko-edit-title" class="col-form-label">Title</label>
+                        <input id="ko-edit-title" class="form-control form-control-sm" data-bind="value: book().title" type="text">
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label for="ko-edit-author" class="col-form-label">Author</label>
+                        <input id="ko-edit-author" class="form-control form-control-sm" data-bind="value: book().author" type="text">
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label for="ko-edit-year" class="col-form-label">Year</label>
+                        <input id="ko-edit-year" class="form-control form-control-sm" data-bind="value: book().year" type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ko-edit-cover" class="col-form-label">Cover</label>
+                        <input id="ko-edit-cover" class="form-control form-control-sm" data-bind="value: book().cover" type="text">
+                    </div>
+
+                    <button class="btn btn-success" data-bind="click: $root.editBook" >Save</button>
+                    <button class="btn btn-warning pull-right" data-bind="click: $root.cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

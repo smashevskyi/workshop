@@ -34,6 +34,9 @@
                     <li class="nav-item">
                         @Html.ActionLink("Workshop", "Index", "Workshop", null, new { @class = "nav-link text-branded" })
                     </li>
+                    <li class="nav-item">
+                        @Html.RouteLink("Manage", "Manage_default", new { controller = String.Empty, action = String.Empty }, new { @class = "nav-link text-branded" })
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -58,6 +61,7 @@
     <!-- SCRIPTS -->
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/knockout")
     @RenderSection("scripts", required: false)
 
     <!-- CHANG NAVBAR ONSCROLL -->

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using MyWorkshop.Models;
 
-namespace MyWorkshop.Models
+namespace MyWorkshop.DAL
 {
     public class MWContext : DbContext
     {
@@ -18,6 +19,7 @@ namespace MyWorkshop.Models
         public DbSet<Image> Images { get; set; }
 
         public DbSet<Album> Albums { get; set; }
+        public DbSet<Book> Books { get; set; }
 
         //public System.Data.Entity.DbSet<MyWorkshop.ViewModels.AlbumViewModel> AlbumViewModels { get; set; }
 

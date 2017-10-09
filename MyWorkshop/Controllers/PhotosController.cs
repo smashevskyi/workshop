@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Data.Entity;
 using System.Web.Mvc;
 using MyWorkshop.Models;
 using MyWorkshop.ViewModels;
-using Newtonsoft.Json.Linq;
-using System.IO;
-using System.Web.Hosting;
-using MyWorkshop.Helpers;
 using System.Net;
+using MyWorkshop.DAL.Abstract;
+using System.Text.RegularExpressions;
 
 namespace MyWorkshop.Controllers
 {
     public class PhotosController : Controller
     {
-        private MWContext db;
-        public PhotosController()
+        private IUnitOfWork unitOfWork;
+        public PhotosController(IUnitOfWork uow)
         {
-            db = new MWContext();
+            unitOfWork = uow;
         }
 
         string serverMapPath = "~/Content/Images/Photos/";
@@ -34,31 +28,8 @@ namespace MyWorkshop.Controllers
             var firstDay = DateTime.Today.AddDays(-30);
             AlbumComplexModel model = new AlbumComplexModel();
 
-            List<Album> albums = db.Albums
-                .Where(a => a.Published && a.CreatedOn >= firstDay)
-                .OrderByDescending(a => a.AlbumId)
-                .Include(a => a.Images)
-                .ToList();
-
-            model.Albums = albums;
-
-            var archiveEntry = db.Albums
-                .GroupBy(o => new
-                {
-                    Month = o.CreatedOn.Month,
-                    Year = o.CreatedOn.Year
-                })
-                .Select(g => new ArchiveEntry
-                {
-                    Month = g.Key.Month,
-                    Year = g.Key.Year,
-                    Total = g.Count()
-                })
-                .OrderByDescending(a => a.Year)
-                .ThenByDescending(a => a.Month)
-                .ToList();
-
-            model.ArchiveEntries = archiveEntry;
+            model.Albums = unitOfWork.AlbumRepository.GetAlbums(filter:(Album a) => (a.Published && a.CreatedOn >= firstDay), includeProp:true);
+            model.ArchiveEntries = unitOfWork.AlbumRepository.GetArchive();
 
             return View(model);
         }
@@ -67,53 +38,40 @@ namespace MyWorkshop.Controllers
         {
             AlbumComplexModel model = new AlbumComplexModel();
 
-            var albums = db.Albums
-                .Where(a => a.Published && a.CreatedOn.Year == year && a.CreatedOn.Month == month)
-                .OrderByDescending(a => a.AlbumId)
-                .ToList();
-
-            model.Albums = albums;
-
-            var archiveEntry = db.Albums
-                .GroupBy(o => new
-                {
-                    Month = o.CreatedOn.Month,
-                    Year = o.CreatedOn.Year
-                })
-                .Select(g => new ArchiveEntry
-                {
-                    Month = g.Key.Month,
-                    Year = g.Key.Year,
-                    Total = g.Count()
-                })
-                .OrderByDescending(a => a.Year)
-                .ThenByDescending(a => a.Month)
-                .ToList();
-
-            model.ArchiveEntries = archiveEntry;
+            model.Albums = unitOfWork.AlbumRepository.GetAlbums(filter:(Album a) => (a.Published && a.CreatedOn.Year == year && a.CreatedOn.Month == month));
+            model.ArchiveEntries = unitOfWork.AlbumRepository.GetArchive();
 
             return View("Index", model);
         }
 
+        // Альбом запрашивается по url slug, но нам действительно нужен только айди который вшит в его начале.
         public ActionResult Album(string urlSlug)
         {
-            if (String.IsNullOrWhiteSpace(urlSlug))
+            int id;
+            bool result = Int32.TryParse(Regex.Match(urlSlug, @"\d+").Value, out id);
+
+            if (result)
+            {
+                Album album = unitOfWork.AlbumRepository.GetAlbumById(id);
+                if (album == null || album.Published == false)
+                {
+                    return HttpNotFound();
+                }
+                return View(album);
+            }
+            else
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            Album album = db.Albums
-                            .Where(x => x.Slug == urlSlug.ToLower())
-                            .Include(x => x.Images)
-                            .FirstOrDefault();
-
-            if (album == null || album.Published == false)
-            {
-                return HttpNotFound();
-            }
-
-            return View(album);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

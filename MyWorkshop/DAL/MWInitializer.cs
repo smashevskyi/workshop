@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using MyWorkshop.Models;
 
-namespace MyWorkshop.Models
+namespace MyWorkshop.DAL
 {
     public class MWInitializer : System.Data.Entity.DropCreateDatabaseAlways<MWContext>
     {
@@ -114,7 +115,7 @@ namespace MyWorkshop.Models
             var album = new Album()
             {
                 Title = "Album name sample",
-                CreatedOn = DateTime.Now,
+                CreatedOn = DateTime.Parse("01/04/2017"),
                 Description = "This is some basic description",
                 Published = true,
                 ModifiedOn = DateTime.Now,
@@ -202,6 +203,14 @@ namespace MyWorkshop.Models
 
             context.SaveChanges();
 
+
+
+            context.Books.Add(new Book() { Title = "Defender Of Rainbows", Author = "Jacqueline J. Sharp", Year = 2015, Cover = "Paperback" });
+            context.Books.Add(new Book() { Title = "Descendants Without Glory", Author = "Sebastian Harrison", Year = 2012, Cover = "Hard" });
+            context.Books.Add(new Book() { Title = "Hunted By My Family", Author = "Amy Patel", Year = 2014, Cover = "Hard" });
+            context.Books.Add(new Book() { Title = "Limits Of Electricity", Author = "Ewan Lawson", Year = 2011, Cover = "Paperback" });
+            context.Books.Add(new Book() { Title = "Maverik The Parrot", Author = "Logan Paul", Year = 2017, Cover = "Savage" });
+            context.SaveChanges();
         }
     }
 }

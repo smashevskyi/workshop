@@ -7,7 +7,7 @@ body {
     margin-bottom: 30px;
 }
 
-body#body-user{
+#body-user{
     background-color: #F1F1F1 !important;
 }
 
@@ -60,7 +60,7 @@ i {
     box-shadow: 0 4px 10px 0 rgba(0,0,0,0.2), 0 4px 20px 0 rgba(0,0,0,0.2);
 }
 
-hr.hr-small {
+.hr-small {
     max-width: 50px;
     border: 3px solid #FBB35C !important;
 }
@@ -74,6 +74,9 @@ a.sidebar-tag {
     line-height: 0.8;
 }
 
+.selected{
+    background-color: #c2c2c2 !important;
+}
 /*=================================================*/
 
 
@@ -205,7 +208,6 @@ div.header-content {
 
 .text {
     color: white;
-    font-size: 20px;
     opacity: 1;
     position: absolute;
     top: 50%;
@@ -215,6 +217,9 @@ div.header-content {
     text-align: center;
     text-shadow: 0 0 10px black;
     -ms-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
 

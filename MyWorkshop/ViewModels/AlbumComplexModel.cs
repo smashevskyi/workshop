@@ -8,7 +8,7 @@ namespace MyWorkshop.ViewModels
 {
     public class AlbumComplexModel
     {
-        public IList<Album> Albums { get; set; }
-        public IList<ArchiveEntry> ArchiveEntries { get; set; }
+        public IEnumerable<Album> Albums { get; set; }
+        public IEnumerable<ArchiveEntry> ArchiveEntries { get; set; }
     }
 }

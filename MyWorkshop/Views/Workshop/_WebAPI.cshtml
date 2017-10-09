@@ -1,0 +1,82 @@
+﻿
+<div class="row mt-5" id="ws-webapi">
+
+    <div class="col-md-12 col-lg-9">
+        <h1 class="text-center">Simple Web API</h1>
+
+        <h2>Books:</h2>
+
+        <table class="table table-hover" id="wa-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Cover</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div id="wa-display-error" class="alert-danger" role="alert"></div>
+    </div>
+    <div class="col-md-12 col-lg-3">
+
+        <!-- Button block -->
+        <button id="wa-show-all" class="btn btn-primary btn-block">Show all</button>
+
+        <div class="input-group m-y my-2">
+            <input type="text" id="wa-searching-id" class="form-control" placeholder="Search by Id">
+            <span class="input-group-btn">
+                <button id="wa-find" class="btn btn-secondary" type="button">Find!</button>
+            </span>
+        </div>
+
+        <button id="wa-show-add" class="btn btn-success btn-block">Add new book</button>
+        <button id="wa-edit-selected" class="btn btn-warning btn-block">Edit selected</button>
+        <button id="wa-del-selected" class="btn btn-danger btn-block">Delete selected</button>
+
+        <!-- Create block -->
+        <div id="wa-block-add" class="m-y-md" style="display:none">
+            <input id="wa-title" class="form-control" type="text" name="Title" placeholder="Title" />
+            <input id="wa-author" class="form-control" type="text" name="Author" placeholder="Author" />
+            <input id="wa-year" class="form-control" type="text" name="Year" placeholder="Year" />
+            <input id="wa-cover" class="form-control" type="text" name="Cover" placeholder="Cover" />
+            <button id="wa-add" class="btn btn-success">Add</button>
+        </div>
+
+        <!-- Edit block -->
+        <div id="wa-block-edit" class="card m-y-md my-2" style="display:none">
+
+            <div class="card-header">
+                <h4 class="text-center mb-0">Edit book</h4>
+            </div>
+
+            <input id="wa-edit-id" type="text" name="bookId" value="" disabled="disabled" class="hidden-xs-up" />
+            <div class="card-block">
+                <div class="form-group  mb-0">
+                    <label for="wa-edit-title" class="col-form-label">Title</label>
+                    <input class="form-control form-control-sm" type="text" id="wa-edit-title">
+                </div>
+
+                <div class="form-group mb-0">
+                    <label for="wa-edit-author" class="col-form-label">Author</label>
+                    <input class="form-control form-control-sm" type="text" id="wa-edit-author">
+                </div>
+
+                <div class="form-group mb-0">
+                    <label for="wa-edit-year" class="col-form-label">Year</label>
+                    <input class="form-control form-control-sm" type="text" id="wa-edit-year">
+                </div>
+
+                <div class="form-group">
+                    <label for="wa-edit-cover" class="col-form-label">Cover</label>
+                    <input class="form-control form-control-sm" type="text" id="wa-edit-cover">
+                </div>
+
+                <button id="wa-edit" class="btn btn-success">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

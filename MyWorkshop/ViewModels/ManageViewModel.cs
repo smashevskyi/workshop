@@ -8,7 +8,7 @@ namespace MyWorkshop.ViewModels
 {
     public class ManageViewModel
     {
-        public IList<Post> Posts { get; set; }
-        public IList<Album> Albums { get; set; }
+        public IEnumerable<Post> Posts { get; set; }
+        public IEnumerable<Album> Albums { get; set; }
     }
 }

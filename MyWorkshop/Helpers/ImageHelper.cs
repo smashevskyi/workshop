@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Helpers;
 
 namespace MyWorkshop.Helpers
 {
-    public class ImageHelper
+    public static class ImageHelper
     {
-        public bool SaveToFolder(HttpPostedFileBase image, string pathToSave, out string fileName)
+        public static bool SaveToFolder(HttpPostedFileBase image, string pathToSave, out string fileName)
         {
 
             if(IsImage(image) == false)
@@ -51,7 +48,7 @@ namespace MyWorkshop.Helpers
         /// <param name="width">The width to resize to.</param>
         /// <param name="height">The height to resize to.</param>
         /// <returns>The resized image.</returns>
-        public void ResizeImage(Image image, int width, int height, string path)
+        private static void ResizeImage(Image image, int width, int height, string path)
         {
             int quality = 90;
             System.Drawing.Imaging.EncoderParameters encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
@@ -80,7 +77,7 @@ namespace MyWorkshop.Helpers
             destImage.Save(path, GetImageCodeInfo("image/jpeg"), encoderParameters);
         }
 
-        public void ScaleAndResize(Image image, int maxWidth, string path)
+        private static void ScaleAndResize(Image image, int maxWidth, string path)
         {
             var ratio = (double)maxWidth / image.Width;
             //var ratioY = (double)maxHeight / image.Height;
@@ -92,7 +89,7 @@ namespace MyWorkshop.Helpers
             ResizeImage(image, newWidth, newHeight, path);
         }
 
-        public static ImageCodecInfo GetImageCodeInfo(string mimeType)
+        private static ImageCodecInfo GetImageCodeInfo(string mimeType)
         {
             ImageCodecInfo[] info = ImageCodecInfo.GetImageEncoders();
             foreach (ImageCodecInfo ici in info)
@@ -101,7 +98,7 @@ namespace MyWorkshop.Helpers
             return null;
         }
 
-        private bool IsImage(HttpPostedFileBase file)
+        private static bool IsImage(HttpPostedFileBase file)
         {
             if (file.ContentType.Contains("image"))
             {

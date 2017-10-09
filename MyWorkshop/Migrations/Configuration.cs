@@ -5,7 +5,7 @@ namespace MyWorkshop.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<MyWorkshop.Models.MWContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<MyWorkshop.DAL.MWContext>
     {
         public Configuration()
         {
@@ -13,7 +13,7 @@ namespace MyWorkshop.Migrations
             ContextKey = "MyWorkshop.Models.MWContext";
         }
 
-        protected override void Seed(MyWorkshop.Models.MWContext context)
+        protected override void Seed(MyWorkshop.DAL.MWContext context)
         {
             //  This method will be called after migrating to the latest version.
 

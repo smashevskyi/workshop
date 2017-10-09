@@ -1,9 +1,6 @@
 ﻿using MyWorkshop.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
 
 namespace MyWorkshop.Helpers
@@ -12,9 +9,9 @@ namespace MyWorkshop.Helpers
     {
         // modified code from A.Friman's book
         public static MvcHtmlString PageLinks(
-        this HtmlHelper html,
-        PagingInfo pagingInfo,
-        Func<int, string> pageUrl)
+                                            this HtmlHelper html,
+                                            PagingInfo pagingInfo,
+                                            Func<int, string> pageUrl)
         {
             StringBuilder result = new StringBuilder();
             for (int i = 1; i <= pagingInfo.TotalPages; i++)

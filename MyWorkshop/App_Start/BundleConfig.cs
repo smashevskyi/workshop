@@ -11,6 +11,9 @@ namespace MyWorkshop
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
+                        "~/Scripts/knockout-{version}.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 
@@ -31,6 +34,10 @@ namespace MyWorkshop
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
                       "~/Content/font-awesome.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/workshop").Include(
+                      "~/Scripts/app/ws-webapi.js",
+                      "~/Scripts/app/ws-knockout.js"));
         }
     }
 }

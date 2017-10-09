@@ -1,4 +1,6 @@
-﻿using MyWorkshop.Helpers;
+﻿using MyWorkshop.DAL.Abstract;
+using MyWorkshop.DAL.Concrete;
+using MyWorkshop.Helpers;
 using MyWorkshop.Models;
 using MyWorkshop.ViewModels;
 using Newtonsoft.Json.Linq;
@@ -15,10 +17,10 @@ namespace MyWorkshop.Areas.Manage.Controllers
 {
     public class PostsController : Controller
     {
-        private MWContext context;
-        public PostsController()
+        private IUnitOfWork unitOfWork;
+        public PostsController(IUnitOfWork uow)
         {
-            context = new MWContext();
+            unitOfWork = uow;
         }
 
         String serverMapPath = "~/Content/Images/Photos/";
@@ -31,21 +33,13 @@ namespace MyWorkshop.Areas.Manage.Controllers
         public ActionResult Index(int page = 1)
         {
             int pageSize = 15;
+            var posts = unitOfWork.PostRepository.GetPosts(null, null, page, pageSize);
 
-            var posts = from p in context.Posts
-                        orderby p.Id descending
-                        select p;
-
-            var result = posts
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            ViewBag.Pages = Math.Ceiling((double)posts.Count() / pageSize);
+            ViewBag.Pages = Math.Ceiling((double)unitOfWork.PostRepository.GetPosts().Count() / pageSize);
             ViewBag.PageSize = pageSize;
             ViewBag.CurrentPage = page;
 
-            return View(result);
+            return View(posts);
         }
 
 
@@ -56,11 +50,14 @@ namespace MyWorkshop.Areas.Manage.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Post post = context.Posts.Find(id);
+
+            Post post = unitOfWork.PostRepository.GetPostById((int)id);
+
             if (post == null)
             {
                 return HttpNotFound();
             }
+
             return View(post);
         }
 
@@ -81,20 +78,22 @@ namespace MyWorkshop.Areas.Manage.Controllers
         {
             if (ModelState.IsValid)
             {
-                var post = new Post();
-                post.Title = postView.Title;
-                post.Description = postView.Description;
-                post.PostedOn = DateTime.Now;
-                post.Published = postView.Published;
-                post.UrlSlug = SlugHelper.URLFriendly(postView.UrlSlug);
-
                 // upload image or download Bing daily picture
                 if (image != null)
                 {
                     string imgPath = DateTime.Now.ToString("yyyyMMddHHmm") + System.IO.Path.GetExtension(image.FileName);
                     string ImgSavePath = HttpContext.Server.MapPath("~/Content/Images/Thoughts/")
                                                           + imgPath;
-                    image.SaveAs(ImgSavePath);
+                    try
+                    {
+                        image.SaveAs(ImgSavePath);
+                    }
+                    catch (Exception)
+                    {
+                        ModelState.AddModelError(string.Empty, "Unable to save image.");
+                        return View(postView);
+                    }
+
                     postView.ImagePath = imgPath;
                 }
                 else
@@ -116,50 +115,46 @@ namespace MyWorkshop.Areas.Manage.Controllers
                             webClient.DownloadFile("https://www.bing.com/" + alterPath, ImgSavePath);
                             postView.ImagePath = imgPath;
                         }
-                        catch(Exception)
+                        catch (Exception)
                         {
                             ModelState.AddModelError(string.Empty, "Can not download Bing image. Try again or upload existing image.");
                             return View(postView);
                         }
- 
+
                     }
                 } // end of image save if..else statement
-
+                
+                var post = new Post();
+                post.Title = postView.Title;
+                post.Description = postView.Description;
+                post.PostedOn = DateTime.Now;
+                post.Published = postView.Published;
+                post.UrlSlug = SlugHelper.URLFriendly(postView.UrlSlug);
                 post.ImagePath = postView.ImagePath;
                 post.Tags = new List<Tag>();
-                
+
                 if (!String.IsNullOrWhiteSpace(postView.Tags))
                 {
-                    postView.Tags = postView.Tags.Trim();
-                    var tagList = postView.Tags.Split(new Char[] { ' ' });
-
-                    foreach (var tag in tagList)
-                    {
-                        var tagInDb = context.Tags.Where(t => t.Name == tag.ToUpper()).SingleOrDefault();
-                        if (tagInDb != null)
-                        {
-                            post.Tags.Add(tagInDb);
-                        }
-                        else
-                        {
-                            var objTag = context.Tags.Add(new Tag() { Name = tag.ToUpper() });
-                            context.SaveChanges();
-                            post.Tags.Add(objTag);
-                        }
-                    }
+                    TagsToEntities(postView, post);
                 }
 
-                context.Posts.Add(post);
-                context.SaveChanges();
-
-                // Updating slug. Adding {id-} in the beginning
-                context.Entry(post).GetDatabaseValues();
-                string idSlug = post.Id + "-" + post.UrlSlug;
-                context.Entry(post).Property(u => u.UrlSlug).CurrentValue = idSlug;
-                context.SaveChanges();
+                try
+                {
+                    post = unitOfWork.PostRepository.InsertPost(post);
+                    unitOfWork.Save();
+                    // Updating slug. Adding {id-} in the beginning
+                    post.UrlSlug = post.Id + "-" + post.UrlSlug;
+                    unitOfWork.PostRepository.UpdatePost(post);
+                    unitOfWork.Save();
+                }
+                catch(Exception)
+                {
+                    ModelState.AddModelError(string.Empty, "Unable to save changes.");
+                    return View(postView);
+                }
 
                 return RedirectToAction("Index", new { page = 1 });
-            } // end of block "if model is valid"
+            }
 
             ViewBag.Title = "Create";
             return View("CreateEdit", postView);
@@ -172,7 +167,8 @@ namespace MyWorkshop.Areas.Manage.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Post post = context.Posts.Find(id);
+
+            Post post = unitOfWork.PostRepository.GetPostById((int)id);
 
             if (post == null)
             {
@@ -189,11 +185,12 @@ namespace MyWorkshop.Areas.Manage.Controllers
 
             if (post.Tags != null && post.Tags.Count > 0)
             {
+                StringBuilder sb = new StringBuilder();
                 foreach (var tag in post.Tags)
                 {
-                    postView.Tags += tag.Name + " ";
+                    sb.Append(tag.Name).Append(" ");
                 }
-                postView.Tags = postView.Tags.Trim();
+                postView.Tags = sb.ToString().TrimEnd();
             }
 
             ViewBag.Title = "Edit";
@@ -207,49 +204,49 @@ namespace MyWorkshop.Areas.Manage.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(PostViewModel postView, HttpPostedFileBase image = null)
         {
-            var post = context.Posts.Find(postView.Id);
+            var post = unitOfWork.PostRepository.GetPostById(postView.Id);
 
             if (ModelState.IsValid)
             {
-                context.Entry(post).Property(u => u.Title).CurrentValue = postView.Title;
-                context.Entry(post).Property(u => u.Description).CurrentValue = postView.Description;
-                context.Entry(post).Property(u => u.Published).CurrentValue = postView.Published;
+                post.Title = postView.Title;
+                post.Description = postView.Description;
+                post.Published = postView.Published;
 
                 if (image != null)
                 {
                     string imgPath = DateTime.Now.ToString("yyyyMMddHHmm") + System.IO.Path.GetExtension(image.FileName);
                     string ImgSavePath = HttpContext.Server.MapPath("~/Content/Images/Thoughts/")
                                                           + imgPath;
-                    image.SaveAs(ImgSavePath);
+                    try
+                    {
+                        image.SaveAs(ImgSavePath);
+                    }
+                    catch (Exception)
+                    {
+                        ModelState.AddModelError(string.Empty, "Unable to save image.");
+                        return View(postView);
+                    }
+
                     postView.ImagePath = imgPath;
-                    context.Entry(post).Property(u => u.ImagePath).CurrentValue = postView.ImagePath;
+                    post.ImagePath = postView.ImagePath;
                 }
 
                 post.Tags.Clear();
 
                 if (!String.IsNullOrWhiteSpace(postView.Tags))
                 {
-                    var tagList = postView.Tags.Split(new Char[] { ' ' });
-
-                    foreach (var tag in tagList)
-                    {
-                        var tagInDb = context.Tags.Where(t => t.Name == tag.ToUpper()).SingleOrDefault();
-                        if (tagInDb != null)
-                        {
-                            post.Tags.Add(tagInDb);
-                        }
-                        else
-                        {
-                            var objTag = context.Tags.Add(new Tag() { Name = tag.ToUpper() });
-                            context.SaveChanges();
-                            post.Tags.Add(objTag);
-                        }
-                        context.SaveChanges();
-                    }
+                    TagsToEntities(postView, post);
                 }
-
-                context.SaveChanges();
-                TempData["message"] = string.Format("Post has been saved");
+                try
+                {
+                    unitOfWork.PostRepository.UpdatePost(post);
+                    unitOfWork.Save();
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(string.Empty, "Unable to save changes.");
+                    return View(postView);
+                }
                 return RedirectToAction("Index");
             }
 
@@ -264,11 +261,14 @@ namespace MyWorkshop.Areas.Manage.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Post post = context.Posts.Find(id);
+
+            Post post = unitOfWork.PostRepository.GetPostById((int)id);
+
             if (post == null)
             {
                 return HttpNotFound();
             }
+
             return View(post);
         }
 
@@ -277,22 +277,47 @@ namespace MyWorkshop.Areas.Manage.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Post post = context.Posts.Find(id);
-            context.Posts.Remove(post);
-            context.SaveChanges();
+            try
+            {
+                Post post = unitOfWork.PostRepository.GetPostById(id);
+                unitOfWork.PostRepository.DeletePost(id);
+                unitOfWork.Save();
+            }
+            catch (Exception)
+            {
+                TempData["message"] = string.Format("Unable to delete post.");
+                return RedirectToAction("Delete", new { id = id});
+            }
             return RedirectToAction("Index");
+        }
+
+        // splits string of tags into array and insert them into DB if they are not exist
+        private void TagsToEntities(PostViewModel postView, Post post)
+        {
+            postView.Tags = postView.Tags.Trim();
+            var tagList = postView.Tags.Split(new Char[] { ' ' });
+
+            foreach (var tag in tagList)
+            {
+                var tagInDb = unitOfWork.PostRepository.GetTagByName(tag.ToUpper());
+                if (tagInDb != null)
+                {
+                    post.Tags.Add(tagInDb);
+                }
+                else
+                {
+                    post.Tags.Add(new Tag() { Name = tag.ToUpper() });
+                }
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                context.Dispose();
+                unitOfWork.Dispose();
             }
             base.Dispose(disposing);
         }
-
-
-
     }
 }

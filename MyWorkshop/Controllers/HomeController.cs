@@ -1,19 +1,16 @@
-﻿using MyWorkshop.Models;
+﻿using MyWorkshop.DAL.Abstract;
+using MyWorkshop.Models;
 using MyWorkshop.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace MyWorkshop.Controllers
 {
     public class HomeController : Controller
     {
-        private MWContext db;
-        public HomeController()
+        private IUnitOfWork unitOfWork;
+        public HomeController(IUnitOfWork uow)
         {
-            db = new MWContext();
+            unitOfWork = uow;
         }
 
         // GET: Home
@@ -21,11 +18,8 @@ namespace MyWorkshop.Controllers
         {
             ManageViewModel model = new ManageViewModel();
 
-            model.Posts = db.Posts
-                .Where(p => p.Published)
-                .OrderByDescending(p => p.Id)
-                .Take(3)
-                .ToList();
+            model.Posts = unitOfWork.PostRepository.GetPosts((Post p) => p.Published, null, 1, 3);
+            model.Albums = unitOfWork.AlbumRepository.GetAlbums((Album a) => a.Published, null, false, 1, 4);
 
             foreach (var post in model.Posts)
             {
@@ -37,13 +31,15 @@ namespace MyWorkshop.Controllers
                 }
             }
 
-            model.Albums = db.Albums
-                .Where(a => a.Published)
-                .OrderByDescending(a => a.AlbumId)
-                .Take(4)
-                .ToList();
-
             return View(model);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

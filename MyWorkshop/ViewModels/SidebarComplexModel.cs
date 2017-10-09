@@ -8,7 +8,7 @@ namespace MyWorkshop.ViewModels
 {
     public class SidebarComplexModel
     {
-        public IList<Post> Posts { get; set; }
-        public IList<ArchiveEntry> ArchiveEntries { get; set; }
+        public IEnumerable<Post> Posts { get; set; }
+        public IEnumerable<ArchiveEntry> ArchiveEntries { get; set; }
     }
 }

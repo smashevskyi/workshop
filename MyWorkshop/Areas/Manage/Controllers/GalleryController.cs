@@ -1,25 +1,23 @@
-﻿using MyWorkshop.Helpers;
+﻿using MyWorkshop.DAL.Abstract;
+using MyWorkshop.Helpers;
 using MyWorkshop.Models;
 using MyWorkshop.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 
 namespace MyWorkshop.Areas.Manage.Controllers
 {
     public class GalleryController : Controller
     {
-        private MWContext context;
-        public GalleryController()
+        private IUnitOfWork unitOfWork;
+        public GalleryController(IUnitOfWork uow)
         {
-            context = new MWContext();
+            unitOfWork = uow;
         }
-        
 
         String serverMapPath = "~/Content/Images/Photos/";
         private string StorageRoot
@@ -32,16 +30,9 @@ namespace MyWorkshop.Areas.Manage.Controllers
         {
             int pageSize = 15;
 
-            var albums = from a in context.Albums
-                         orderby a.AlbumId descending
-                         select a;
+            var result = unitOfWork.AlbumRepository.GetAlbums(page:page, size:pageSize);
 
-            var result = albums
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            ViewBag.Pages = Math.Ceiling((double)albums.Count() / pageSize);
+            ViewBag.Pages = Math.Ceiling((double)unitOfWork.AlbumRepository.CountAlbums() / pageSize);
             ViewBag.PageSize = pageSize;
             ViewBag.CurrentPage = page;
 
@@ -71,16 +62,16 @@ namespace MyWorkshop.Areas.Manage.Controllers
                 album.CreatedOn = DateTime.Now;
                 album.ModifiedOn = DateTime.Now;
 
-                context.Albums.Add(album);
-                context.SaveChanges();
+                unitOfWork.AlbumRepository.InsertAlbum(album);
+                unitOfWork.Save();
 
                 // adding id to slug
-                context.Entry(album).GetDatabaseValues();
                 string idSlug = album.AlbumId + "-" + album.Slug;
-                context.Entry(album).Property(a => a.Slug).CurrentValue = idSlug;
-                context.SaveChanges();
+                album.Slug = idSlug;
+                unitOfWork.AlbumRepository.UpdateAlbum(album);
+                unitOfWork.Save();
 
-                // creating directories for image save
+                // creating directories for images
                 string albumPath = date.Year + "/" + date.ToString("MM") + "/" + idSlug;
                 string savePath = StorageRoot + albumPath;
                 Directory.CreateDirectory(savePath + "/Original");
@@ -97,9 +88,9 @@ namespace MyWorkshop.Areas.Manage.Controllers
         }
 
         public ActionResult Album(int id)
-        {
-            var album = context.Albums.Where(x => x.AlbumId == id).Include(x => x.Images).FirstOrDefault();
-
+        { 
+            var album = unitOfWork.AlbumRepository.GetAlbumById(id);
+            
             if (album == null)
             {
                 return HttpNotFound();
@@ -116,7 +107,7 @@ namespace MyWorkshop.Areas.Manage.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var album = context.Albums.Where(x => x.AlbumId == id).Include(x => x.Images).FirstOrDefault();
+            var album = unitOfWork.AlbumRepository.GetAlbumById((int)id);
 
             if (album == null)
             {
@@ -133,67 +124,32 @@ namespace MyWorkshop.Areas.Manage.Controllers
         {
             var date = DateTime.Now;
             var id = viewAlbum.AlbumId;
-            Album album = context.Albums.Find(id);
+            Album album = unitOfWork.AlbumRepository.GetAlbumById(id);
 
             if (ModelState.IsValid)
             {
-                context.Entry(album).Property(u => u.Title).CurrentValue = viewAlbum.Title;
-                context.Entry(album).Property(u => u.Description).CurrentValue = viewAlbum.Description;
-                context.Entry(album).Property(u => u.Occasion).CurrentValue = viewAlbum.Occasion;
-                context.Entry(album).Property(u => u.Published).CurrentValue = viewAlbum.Published;
-                context.Entry(album).Property(u => u.PreviewImagePath).CurrentValue = viewAlbum.PreviewImagePath;
-                context.SaveChanges();
+                album.Title = viewAlbum.Title;
+                album.Description = viewAlbum.Description;
+                album.Occasion = viewAlbum.Occasion;
+                album.Published = viewAlbum.Published;
+                album.PreviewImagePath = viewAlbum.PreviewImagePath;
+                unitOfWork.AlbumRepository.UpdateAlbum(album);
+                unitOfWork.Save();
             }
-
 
             if (images != null)
             {
-                foreach (var model in images)
+                foreach (var image in images)
                 {
-                    Image img = context.Images.Find(model.ImageId);
-                    context.Entry(img).Property(u => u.Name).CurrentValue = model.Name;
-                    context.Entry(img).Property(u => u.Visible).CurrentValue = model.Visible;
-                    context.SaveChanges();
+                    Image img = unitOfWork.AlbumRepository.GetImageById(image.ImageId);
+                    img.Name = image.Name;
+                    img.Visible = image.Visible;
+                    unitOfWork.AlbumRepository.UpdateImage(img);                    
                 }
+                unitOfWork.Save();
             }
 
             return RedirectToAction("Album", new { id = album.AlbumId });
-
-        }
-
-        public ActionResult EditImages(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            var album = context.Albums.Where(x => x.AlbumId == id).Include(x => x.Images).FirstOrDefault();
-
-            if (album == null)
-            {
-                return HttpNotFound();
-            }
-
-            ViewBag.AlbumId = id;
-            return View(album.Images.OrderBy(i => i.Position).ToList());
-        }
-
-        [HttpPost]
-        public ActionResult EditImages(List<ImageViewModel> images, int albumId)
-        {
-            if (images != null)
-            {
-                foreach (var model in images)
-                {
-                    Image img = context.Images.Find(model.ImageId);
-                    img.Name = model.Name;
-                    img.Visible = model.Visible;
-                    context.SaveChanges();
-                }
-            }
-
-            return RedirectToAction("EditAlbum", new { id = albumId });
         }
 
         [HttpPost]
@@ -201,23 +157,22 @@ namespace MyWorkshop.Areas.Manage.Controllers
         {
             if (Request.Files[0].ContentLength == 0)
             {
-                ViewBag.AlbumId = albumId;
-                return View("EditImages", context.Albums.Find(albumId).Images.ToList());
+                return RedirectToAction("Album", new { id = albumId });
             }
 
-            var album = context.Albums.Find(albumId);
+            var album = unitOfWork.AlbumRepository.GetAlbumById(albumId);
+
             DateTime date = DateTime.Now;
             bool hasPreview = album.PreviewImagePath != null;
             int counter = album.Images.Count + 1;
-            string albumPath = date.Year + "/" + date.ToString("MM") + "/" + album.Slug;
+            string albumPath = album.CreatedOn.Year + "/" + album.CreatedOn.ToString("MM") + "/" + album.Slug;
             string savePath = StorageRoot + albumPath;
 
-            ImageHelper helper = new ImageHelper();
             string fileName;
 
             for (int i = 0; i < Request.Files.Count; i++)
             {
-                if (helper.SaveToFolder(Request.Files[i], savePath, out fileName)) // true - create sub dirs
+                if (ImageHelper.SaveToFolder(Request.Files[i], savePath, out fileName))
                 {
                     var img = new Image();
                     img.Name = Path.GetFileNameWithoutExtension(fileName);
@@ -236,7 +191,8 @@ namespace MyWorkshop.Areas.Manage.Controllers
                     album.Images.Add(img);
                 }
             }
-            context.SaveChanges();
+            unitOfWork.AlbumRepository.UpdateAlbum(album);
+            unitOfWork.Save();
 
             return RedirectToAction("Album", new { id = albumId });
         }
@@ -247,10 +203,11 @@ namespace MyWorkshop.Areas.Manage.Controllers
             for(var i = 0; i < items.Count; i++)
             {
                 int id = Convert.ToInt32(items[i]);
-                Image image = context.Images.Find(id);
-                context.Entry(image).Property(img => img.Position).CurrentValue = i+1;
-                context.SaveChanges();
+                Image image = unitOfWork.AlbumRepository.GetImageById(id);
+                image.Position = i + 1;
+                unitOfWork.AlbumRepository.UpdateImage(image);
             }
+            unitOfWork.Save();
             return new EmptyResult();
         }
 
@@ -258,9 +215,14 @@ namespace MyWorkshop.Areas.Manage.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult DeleteImage(int id)
         {
-            Image imgToDel = context.Images.Find(id);
-            context.Images.Remove(imgToDel);
+            Image imgToDel = unitOfWork.AlbumRepository.GetImageById(id);
 
+            if(imgToDel == null)
+            {
+                return View();   
+            }
+
+            unitOfWork.AlbumRepository.DeleteImage(imgToDel);
             string imgPath = Path.Combine(StorageRoot, imgToDel.ImagePath);
             string thmbPath = Path.Combine(StorageRoot, imgToDel.ThumbPath);
             string resizePath = Path.Combine(StorageRoot, imgToDel.ResizedPath);
@@ -277,15 +239,17 @@ namespace MyWorkshop.Areas.Manage.Controllers
             {
                 System.IO.File.Delete(resizePath);
             }
-            context.SaveChanges();
-            
+
+            unitOfWork.Save();
             return View();
         }
 
+        // когда удаляется изображение, которое так же является изобр. для превью, нужно выбрать новое, в данном случае берется первое из коллекции, или ничего если она пустая.
         public void RepickAlbumPreview(int id)
         {
-            var album = context.Albums.Find(id);
+            var album = unitOfWork.AlbumRepository.GetAlbumById(id);
             Image img = album.Images.FirstOrDefault();
+
             if(img != null)
             {
                 album.PreviewImagePath = img.ImagePath;
@@ -294,7 +258,8 @@ namespace MyWorkshop.Areas.Manage.Controllers
             {
                 album.PreviewImagePath = "";
             }
-            context.SaveChanges();
+
+            unitOfWork.Save();
         }
     }
 }

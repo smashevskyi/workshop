@@ -36,7 +36,10 @@
                 </dd>
 
             </dl>
-
+            @if (TempData["message"] != null)
+            {
+                <p class="text-warning">@TempData["message"]</p>
+            }
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
