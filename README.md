@@ -10,14 +10,18 @@ This is ASP.NET MVC 5 project designed for practice, which in general view is bl
 - [Font-Awesome](http://fontawesome.io/) for icons
 []()
 
-## Not implemented:
-- Error Handling(partly)
-- Authentication
-- Web API
-- Unit Testing
-- Repository pattern
+### Update from 09.10.2017:
+- added Web Api controller and test page for it. 
+- added [Knockout.js](http://knockoutjs.com/)
+- implemented the Repository and Unit of Work patterns
+- implemented Dependency Injection using [Ninject](http://www.ninject.org/)
+- first tries in implementing unit testing using [NUnit](http://nunit.org/) and [Moq](https://github.com/moq/moq4/wiki/Quickstart)
+- small corrections all over the project
 
-For clarity - project is not finished yet.
+## Not implemented:
+- Authentication
+
+For clarity - the project is not finished yet.
 
 ## Installing:
 1. Download/Clone.
